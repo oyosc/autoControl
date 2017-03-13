@@ -48,6 +48,9 @@ function bindIndicators(indicator){
     });
 }
 
+//bind indicators
+bindIndicators(indicator);
+
 http.createServer(function(req, res){
     res.end('that is ok');
-}).listen('8081');
+}).listen('8080');

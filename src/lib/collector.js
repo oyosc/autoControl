@@ -27,7 +27,7 @@ collector.prototype.start = function(){
         let processStat = process.memoryUsage();
         let v8Start = {
             heap: v8.getHeapStatistics(),
-            // heapSpace: v8.getHeapSpaceStatistics(),
+            heapSpace: v8.getHeapSpaceStatistics(),
         }
         let osStat = {
             freeMem: os.freemem(),
