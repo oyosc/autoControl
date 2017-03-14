@@ -4,6 +4,7 @@
 'use strict'
 const Indicator = require('../lib/indicators');
 const http = require('http');
+const socketio = require('socket.io');
 
 let indicator = new Indicator({
     //process
@@ -43,14 +44,34 @@ function bindIndicators(indicator){
     }
     process.on('message', (msg)=>{
         if(Array.isArray(msg)){
-            console.log(msg);
+            msg.forEach(function(data){
+                let handler = collectHandler[data.type];
+                if(typeof handler === 'function'){
+                    collectHandler[data.type](data.value);
+                }
+            });
         }
     });
 }
 
+function bindSocket(io, indicator){
+    Object.keys(indicator.watch).forEach(function(key){
+        let eventName = indicator.watch[key];
+        indicator.on(eventName, (msg) =>{
+            console.log(msg);
+            io.emit(eventName, msg);
+        });
+    });
+}
+
+
 //bind indicators
 bindIndicators(indicator);
 
-http.createServer(function(req, res){
+const server = http.createServer(function(req, res){
     res.end('that is ok');
 }).listen('8080');
+
+const io = socketio(server);
+//bind socket
+bindSocket(io, indicator);
