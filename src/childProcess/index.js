@@ -28,6 +28,8 @@ let indicator = new Indicator({
     largeObjectSpace:'indicators:largeObjectSpace',
 });
 
+console.log(indicator);
+
 function bindIndicators(indicator){
     //parent process will send three type of data
     const collectHandler = {
@@ -60,8 +62,8 @@ function bindIndicators(indicator){
 function bindSocket(io, indicator){
     Object.keys(indicator.watch).forEach(function(key){
         let eventName = indicator.watch[key];
+        console.log(eventName);
         indicator.on(eventName, (msg) =>{
-            console.log(msg);
             io.emit(eventName, msg);
         });
     });

@@ -3,7 +3,7 @@
 
         <h1> Wellcome to auto-control !</h1>
         <h2>Indicators Panels</h2>
-        <Panel
+        <auto
             :rss="rss"
             :heapFree="heapFree"
             :heapUsed="heapUsed"
@@ -13,7 +13,7 @@
             :oldSpace="oldSpace"
             :codeSpace="codeSpace"
             :mapSpace="mapSpace"
-        ></Panel>
+        ></auto>
 
     </div>
 </template>
