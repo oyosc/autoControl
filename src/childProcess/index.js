@@ -5,6 +5,9 @@
 const Indicator = require('../lib/indicators');
 const http = require('http');
 const socketio = require('socket.io');
+const fs = require('fs');
+const path = require('path');
+const staticPath = path.join(__dirname, '../../foreEnd/assets');
 
 let indicator = new Indicator({
     //process
@@ -58,7 +61,6 @@ function bindSocket(io, indicator){
     Object.keys(indicator.watch).forEach(function(key){
         let eventName = indicator.watch[key];
         indicator.on(eventName, (msg) =>{
-            console.log(msg);
             io.emit(eventName, msg);
         });
     });
@@ -68,9 +70,32 @@ function bindSocket(io, indicator){
 //bind indicators
 bindIndicators(indicator);
 
+function getStaticFileStream(url, cb){
+    let filePath = path.join(staticPath, url);
+    console.log(filePath);
+    fs.stat(filePath, (err, stats)=>{
+        if(err) return cb(err);
+        cb(null, fs.createReadStream(filePath));
+    });
+}
+
 const server = http.createServer(function(req, res){
-    res.end('that is ok');
-}).listen('8080');
+    let url = req.url;
+    switch(url){
+        case '/':
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            getStaticFileStream('/index.html', (err, stream) => {
+                console.log(stream);
+                if (err) {
+                    res.writeHead(404);
+                    return res.end('Not Found!');
+                }
+                stream.pipe(res);
+            });
+            break;
+    }
+
+}).listen('8081');
 
 const io = socketio(server);
 //bind socket
