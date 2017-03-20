@@ -61,6 +61,7 @@ function bindSocket(io, indicator){
     Object.keys(indicator.watch).forEach(function(key){
         let eventName = indicator.watch[key];
         indicator.on(eventName, (msg) =>{
+            console.log(msg);
             io.emit(eventName, msg);
         });
     });
