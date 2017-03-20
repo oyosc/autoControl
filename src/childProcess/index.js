@@ -7,7 +7,7 @@ const http = require('http');
 const socketio = require('socket.io');
 const fs = require('fs');
 const path = require('path');
-const staticPath = path.join(__dirname, '../../foreEnd/assets');
+const staticPath = path.join(__dirname, '../../client/dist');
 
 let indicator = new Indicator({
     //process
@@ -72,7 +72,6 @@ bindIndicators(indicator);
 
 function getStaticFileStream(url, cb){
     let filePath = path.join(staticPath, url);
-    console.log(filePath);
     fs.stat(filePath, (err, stats)=>{
         if(err) return cb(err);
         cb(null, fs.createReadStream(filePath));
@@ -81,11 +80,20 @@ function getStaticFileStream(url, cb){
 
 const server = http.createServer(function(req, res){
     let url = req.url;
+    console.log(url);
     switch(url){
         case '/':
             res.writeHead(200, { 'Content-Type': 'text/html' });
             getStaticFileStream('/index.html', (err, stream) => {
-                console.log(stream);
+                if (err) {
+                    res.writeHead(404);
+                    return res.end('Not Found!');
+                }
+                stream.pipe(res);
+            });
+            break;
+        default:
+            getStaticFileStream(url, (err, stream) => {
                 if (err) {
                     res.writeHead(404);
                     return res.end('Not Found!');
@@ -95,7 +103,9 @@ const server = http.createServer(function(req, res){
             break;
     }
 
-}).listen('8081');
+}).listen('8081', function(){
+        console.log('auto-control listen 8081');
+});
 
 const io = socketio(server);
 //bind socket
